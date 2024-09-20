@@ -8,6 +8,8 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 import seaborn as sns
 import matplotlib.pyplot as plt
+import torch.nn.functional as F
+
 
 # Define parameters
 DATA_PATH = 'Data/'  # Set your data path here
@@ -60,41 +62,41 @@ val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
 # Define the LSTM model
 class LSTMModel(nn.Module):
-    def __init__(self, input_size, num_classes):
+    def __init__(self, input_size, output_size, hidden_size=256):
         super(LSTMModel, self).__init__()
-        self.lstm1 = nn.LSTM(input_size, 64, batch_first=True)
-        self.lstm2 = nn.LSTM(64, 128, batch_first=True)
+        self.lstm1 = nn.LSTM(input_size, hidden_size=hidden_size, batch_first=True)
+        self.lstm2 = nn.LSTM(256, 128, batch_first=True)
         self.lstm3 = nn.LSTM(128, 64, batch_first=True)
+        self.dropout = nn.Dropout(p=0.3)
         self.fc1 = nn.Linear(64, 64)
         self.fc2 = nn.Linear(64, 32)
-        self.fc3 = nn.Linear(32, num_classes)
-        self.relu = nn.ReLU()
-        self.softmax = nn.Softmax(dim=1)
+        self.fc3 = nn.Linear(32, output_size)
 
     def forward(self, x):
         x, _ = self.lstm1(x)
         x, _ = self.lstm2(x)
         x, _ = self.lstm3(x)
-        x = x[:, -1, :]  # Get the last output from the last LSTM
-        x = self.relu(self.fc1(x))
-        x = self.relu(self.fc2(x))
+        x = self.dropout(x[:, -1, :])
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
         x = self.fc3(x)
-        return self.softmax(x)
+        return F.log_softmax(x, dim=1)
+
 
 # Initialize model, loss function, optimizer, and scheduler
-model = LSTMModel(input_size=1662, num_classes=len(actions)).to(device)
+model = LSTMModel(input_size=1662, hidden_size=256, output_size=len(actions)).to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.0001)
 scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, verbose=True)
 
 # Hyperparameters
 num_epochs = 2000
-patience = 10  # Early stopping patience
+patience = 20  # Early stopping patience
 
 # Early stopping and best model saving
 best_val_loss = float('inf')
 early_stop_counter = 0
-best_model_path = 'best_lstm_model.pth'
+best_model_path = 'best_lstm_model.h5'
 
 # Training loop
 print("Starting training...")
@@ -120,26 +122,26 @@ for epoch in range(num_epochs):
             val_loss += criterion(val_outputs, val_labels.argmax(dim=1)).item()
     val_loss /= len(val_loader)
 
-    scheduler.step(val_loss)  # Adjust learning rate based on validation loss
+    # scheduler.step(val_loss)  # Adjust learning rate based on validation loss
 
     # Print statistics
     if (epoch + 1) % 100 == 0:
         print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {running_loss / len(train_loader):.4f}, Val Loss: {val_loss:.4f}')
 
-    # # Early stopping and saving best model
-    # if val_loss < best_val_loss:
-    #     best_val_loss = val_loss
-    #     torch.save(model.state_dict(), best_model_path)
-    #     early_stop_counter = 0
-    # else:
-    #     early_stop_counter += 1
+    # Early stopping and saving best model
+    if val_loss < best_val_loss:
+        best_val_loss = val_loss
+        torch.save(model.state_dict(), best_model_path)
+        early_stop_counter = 0
+    else:
+        early_stop_counter += 1
 
-    # if early_stop_counter >= patience:
-    #     print(f"Early stopping at epoch {epoch + 1}, Loss: {running_loss / len(train_loader):.4f}, Val Loss: {val_loss:.4f}'")
-    #     break
+    if early_stop_counter >= patience:
+        print(f"Early stopping at epoch {epoch + 1}, Loss: {running_loss / len(train_loader):.4f}, Val Loss: {val_loss:.4f}'")
+        break
 
 # Load the best model
-model.load_state_dict(torch.load(best_model_path))
+model.load_state_dict(torch.load(best_model_path, weights_only=True))
 model = model.to(device)
 
 # Evaluate the model on the test set and print probabilities
