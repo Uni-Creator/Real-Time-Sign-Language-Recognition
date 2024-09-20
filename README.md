@@ -23,7 +23,7 @@ The project pipeline is as follows:
 ---
 
 ## **Technologies Used**
-- **Python**: For model implementation and data handling.
+- **Python**: For model implementation and data handling. ( Python 3.10 )
 - **PyTorch**: Used for building and training the LSTM model.
 - **Numpy**: For data manipulation and sequence loading.
 - **Matplotlib & Seaborn**: For plotting and visualizing the confusion matrix.
