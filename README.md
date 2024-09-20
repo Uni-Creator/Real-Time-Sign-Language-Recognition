@@ -47,17 +47,6 @@ The project pipeline is as follows:
 └── requirements.txt                # Python dependencies required for the project
 ```
 
-
----
-# **Technologies Used**
-- Python
-- PyTorch
-- Numpy
-- Sklearn
-- Matplotlib & Seaborn
-
----
-
 ---
 
 # **Setup Instructions**
