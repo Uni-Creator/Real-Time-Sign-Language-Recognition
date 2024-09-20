@@ -39,7 +39,7 @@ The project pipeline is as follows:
 │   ├── iloveyou/                   # Folder for "I love you" action sequences
 │   ├── nothing/                    # Folder for "nothing" action sequences
 │   └── thanks/                     # Folder for "thanks" action sequences
-├── best_lstm_model.pth             # Saved model with the best validation accuracy
+├── best_lstm_model.h5              # Saved model with the best validation accuracy
 ├── main.py                         # Main script for  evaluating the model
 ├── trainer.py                      # Script for training the model
 ├── dataCollection.py               # Script for creating data
@@ -55,8 +55,8 @@ The project pipeline is as follows:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/sign-language-recognition-lstm.git
-   cd sign-language-recognition-lstm
+   git clone https://github.com/Uni-Creator/Real-Time-Sign-Language-Recognition.git
+   cd Real-Time-Sign-Language-Recognition
    ```
 
 2. **Create a virtual environment (optional but recommended)**:
@@ -143,8 +143,8 @@ This project implements a Long Short-Term Memory (LSTM) network to classify sequ
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/sign-language-recognition-lstm.git
-   cd sign-language-recognition-lstm
+   git clone https://github.com/Uni-Creator/Real-Time-Sign-Language-Recognition.git
+   cd Real-Time-Sign-Language-Recognition
    ```
 
 2. **Set up a virtual environment** (optional but recommended):
