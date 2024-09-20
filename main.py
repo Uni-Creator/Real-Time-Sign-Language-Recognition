@@ -5,6 +5,8 @@ import cv2  # OpenCV for capturing video
 import os
 import mediapipe as mp
 import time
+import torch.nn.functional as F
+
 
 # Initialize MediaPipe Holistic
 mp_holistic = mp.solutions.holistic
@@ -28,32 +30,32 @@ def extract_keypoints(results):
     return np.concatenate([pose, face, lh, rh])
 
 
-# Define the LSTM model (the same as before)
+# Define the LSTM model
 class LSTMModel(nn.Module):
-    def __init__(self, input_size, num_classes):
+    def __init__(self, input_size, output_size, hidden_size=256):
         super(LSTMModel, self).__init__()
-        self.lstm1 = nn.LSTM(input_size, 64, batch_first=True)
-        self.lstm2 = nn.LSTM(64, 128, batch_first=True)
+        self.lstm1 = nn.LSTM(input_size, hidden_size=hidden_size, batch_first=True)
+        self.lstm2 = nn.LSTM(256, 128, batch_first=True)
         self.lstm3 = nn.LSTM(128, 64, batch_first=True)
+        self.dropout = nn.Dropout(p=0.3)
         self.fc1 = nn.Linear(64, 64)
         self.fc2 = nn.Linear(64, 32)
-        self.fc3 = nn.Linear(32, num_classes)
-        self.relu = nn.ReLU()
-        self.softmax = nn.Softmax(dim=1)
+        self.fc3 = nn.Linear(32, output_size)
 
     def forward(self, x):
         x, _ = self.lstm1(x)
         x, _ = self.lstm2(x)
         x, _ = self.lstm3(x)
-        x = x[:, -1, :]  # Get the last output from the last LSTM
-        x = self.relu(self.fc1(x))
-        x = self.relu(self.fc2(x))
+        x = self.dropout(x[:, -1, :])
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
         x = self.fc3(x)
-        return self.softmax(x)
+        return F.log_softmax(x, dim=1)
+
 
 # Load the trained model
 def load_model(model_path, input_size, num_classes):
-    model = LSTMModel(input_size=input_size, num_classes=num_classes)
+    model = LSTMModel(input_size=input_size, hidden_size=256, output_size=num_classes)
     model.load_state_dict(torch.load(model_path, weights_only=True))
     model.eval()  # Set to evaluation mode
     return model
