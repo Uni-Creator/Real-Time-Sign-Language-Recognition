@@ -47,6 +47,17 @@ The project pipeline is as follows:
 └── requirements.txt                # Python dependencies required for the project
 ```
 
+
+---
+# **Technologies Used**
+- Python
+- PyTorch
+- Numpy
+- Sklearn
+- Matplotlib & Seaborn
+
+---
+
 ---
 
 # **Setup Instructions**
@@ -120,58 +131,6 @@ This project is licensed under the MIT License. See the `LICENSE` file for more 
 
 # **Contact**
 
-For any questions or inquiries about this project, please feel free to reach out at your-email@example.com.
-
----
-
-## **README.md Template**
-
-```markdown
-# Sign Language Recognition with LSTM
-
-## Description
-This project implements a Long Short-Term Memory (LSTM) network to classify sequences of hand gestures in sign language. The model is trained to recognize actions such as 'hello', 'thanks', 'nothing', and 'I love you', using a dataset of gesture sequences. The model is built with PyTorch and supports GPU acceleration for efficient training.
-
-## Technologies Used
-- Python
-- PyTorch
-- Numpy
-- Sklearn
-- Matplotlib & Seaborn
-
-## Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Uni-Creator/Real-Time-Sign-Language-Recognition.git
-   cd Real-Time-Sign-Language-Recognition
-   ```
-
-2. **Set up a virtual environment** (optional but recommended):
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Prepare the dataset**:
-   Place your dataset in the `Data/` folder with subfolders for each action (e.g., `hello/`, `thanks/`, etc.).
-
-## Running the Model
-To train the model:
-```bash
-python main.py
-```
-
-## License
-This project is licensed under the MIT License.
-
-## Contact
-For questions or feedback, reach out at your-email@example.com.
-```
+For any questions or inquiries about this project, please feel free to reach out at abhayr245654@gmail.com.
 
 ---
